@@ -40,7 +40,7 @@ Ekaagra stands apart from traditional focus modes by allowing **per-app scheduli
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/Ekaagra.git
+   git clone https://github.com/piyerx/ekaagra.git
 Open the project in Android Studio.
 
 Enable the required permissions in your emulator or device:
@@ -85,12 +85,5 @@ Material Design 3
 Kotlin Documentation
 
 👨‍🏫 Developed By
-Piyush Verma – Roll No: 301402223161
-
-Priyanshu Agrawal – Roll No: 301402223174
-
-Guide: Vibha Pandey Ma’am
-
-Department of Computer Science & Engineering
-
-Semester: 4th (April–May 2025)
+Piyush Verma | Priyanshu Agrawal
+as a Semester - 4(April–May 2025) Project

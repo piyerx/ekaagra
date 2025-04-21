@@ -1,0 +1,53 @@
+# Built files
+/build/
+/app/build/
+/.gradle/
+/local.properties
+*.iml
+
+# IDE files
+.idea/
+*.ipr
+*.iws
+*.bak
+*.swp
+*.tmp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Android specific
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Keystore files (never upload your keystore!)
+*.jks
+*.keystore
+
+# Jetpack Compose Preview Cache
+.ui/
+
+# Generated files by Kotlin
+*.kotlin_module
+
+# Misc
+*.class
+*.apk
+*.ap_
+*.dex
+*.so
+*.jar
+*.war
+*.ear
+
+# Crashlytics and Fabric
+crashlytics-build.properties
+fabric.properties
+
+# Google Services (if used)
+google-services.json

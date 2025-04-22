@@ -2,40 +2,29 @@ package com.piypriy.demoEkaagra.ui.screens
 
 import android.app.TimePickerDialog
 import android.content.Context
-import androidx.compose.foundation.clickable
+import android.widget.TimePicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessAlarm
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.piypriy.demoEkaagra.viewModel.ReminderViewModel
+
 import java.util.*
 
-data class ReminderItem(
-    val title: String,
-    var isEnabled: Boolean = false,
-    var time: String = "Not Set"
-)
-
 @Composable
-fun LifestyleScreen() {
-    val context = LocalContext.current
+fun LifestyleScreen(
+    viewModel: ReminderViewModel = viewModel()
+) {
+    val reminders by viewModel.reminders.collectAsState()
 
-    // Predefined reminders
-    val reminders = remember {
-        mutableStateListOf(
-            ReminderItem("Wake Up"),
-            ReminderItem("Sleep"),
-            ReminderItem("Workout"),
-            ReminderItem("Study Time"),
-            ReminderItem("Break"),
-        )
-    }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -43,72 +32,94 @@ fun LifestyleScreen() {
             .padding(16.dp)
     ) {
         Text(
-            text = "Lifestyle",
-            style = MaterialTheme.typography.headlineLarge,
+            text = "Lifestyle Reminders",
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        LazyColumn {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             items(reminders) { reminder ->
-                ReminderRow(reminder, context)
+                ReminderCard(
+                    context = context,
+                    name = reminder.name,
+                    isEnabled = reminder.isEnabled,
+                    time = reminder.time,
+                    onToggle = { viewModel.toggleReminder(reminder.name) },
+                    onTimeChange = { newTime -> viewModel.setReminderTime(reminder.name, newTime) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun ReminderRow(reminder: ReminderItem, context: Context) {
-    var isOn by remember { mutableStateOf(reminder.isEnabled) }
-    var time by remember { mutableStateOf(reminder.time) }
-
-    Row(
+fun ReminderCard(
+    context: Context,
+    name: String,
+    isEnabled: Boolean,
+    time: String,
+    onToggle: () -> Unit,
+    onTimeChange: (String) -> Unit
+) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .heightIn(min = 70.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Icon(
-            imageVector = Icons.Default.AccessAlarm,
-            contentDescription = null,
-            modifier = Modifier.size(32.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Column(
+        Row(
             modifier = Modifier
-                .weight(1f)
-                .clickable {
-                    if (isOn) {
-                        showTimePickerDialog(context) { selectedTime ->
-                            time = selectedTime
-                            reminder.time = selectedTime
-                        }
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(text = name, style = MaterialTheme.typography.titleMedium)
+                if (isEnabled && time.isNotEmpty()) {
+                    Text(
+                        text = "Time: $time",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (isEnabled) {
+                    Button(
+                        onClick = {
+                            showTimePickerDialog(context, time, onTimeChange)
+                        },
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Text("Set Time")
                     }
                 }
-        ) {
-            Text(text = reminder.title, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                text = if (isOn) "Time: $time" else "Disabled",
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-
-        Switch(
-            checked = isOn,
-            onCheckedChange = {
-                isOn = it
-                reminder.isEnabled = it
+                Switch(checked = isEnabled, onCheckedChange = { onToggle() })
             }
-        )
+        }
     }
 }
 
-fun showTimePickerDialog(context: Context, onTimeSelected: (String) -> Unit) {
-    val calendar = Calendar.getInstance()
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    val minute = calendar.get(Calendar.MINUTE)
+fun showTimePickerDialog(
+    context: Context,
+    currentTime: String,
+    onTimeSelected: (String) -> Unit
+) {
+    val cal = Calendar.getInstance()
+    val hour = cal.get(Calendar.HOUR_OF_DAY)
+    val minute = cal.get(Calendar.MINUTE)
 
-    TimePickerDialog(context, { _, selectedHour, selectedMinute ->
-        onTimeSelected(String.format("%02d:%02d", selectedHour, selectedMinute))
-    }, hour, minute, true).show()
+    TimePickerDialog(
+        context,
+        { _: TimePicker, selectedHour: Int, selectedMinute: Int ->
+            val formattedTime = String.format("%02d:%02d", selectedHour, selectedMinute)
+            onTimeSelected(formattedTime)
+        },
+        hour,
+        minute,
+        true
+    ).show()
 }

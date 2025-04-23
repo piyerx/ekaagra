@@ -1,3 +1,7 @@
 package com.piypriy.demoEkaagra.model
 
-data class ReminderItem(val title: String)
+data class ReminderItem(
+    val name: String,
+    val isEnabled: Boolean,
+    val time: String
+)

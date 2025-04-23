@@ -7,28 +7,37 @@ import com.piypriy.demoEkaagra.model.ReminderItem
 
 class ReminderViewModel : ViewModel() {
 
-    // Master reminder list
     val reminders = mutableStateListOf(
-        ReminderItem("Meditation"),
-        ReminderItem("Exercise"),
-        ReminderItem("Water"),
-        ReminderItem("Medicine"),
-        ReminderItem("Study"),
-        ReminderItem("Hobby"),
-        ReminderItem("Music")
+        ReminderItem("Meditation", isEnabled = false, time = ""),
+        ReminderItem("Exercise", isEnabled = false, time = ""),
+        ReminderItem("Water", isEnabled = false, time = ""),
+        ReminderItem("Medicine", isEnabled = false, time = ""),
+        ReminderItem("Study", isEnabled = false, time = ""),
+        ReminderItem("Hobby", isEnabled = false, time = ""),
+        ReminderItem("Music", isEnabled = false, time = "")
     )
 
-    // State for toggle (on/off)
-    val toggleStates = mutableStateMapOf<String, Boolean>()
+    fun toggleReminder(reminderName: String) {
+        val index = reminders.indexOfFirst { it.name == reminderName }
+        if (index != -1) {
+            val current = reminders[index]
+            reminders[index] = current.copy(isEnabled = !current.isEnabled)
+        }
+    }
 
-    // State for time per reminder
-    val reminderTimes = mutableStateMapOf<String, String>()
+    fun setReminderTime(reminderName: String, newTime: String) {
+        val index = reminders.indexOfFirst { it.name == reminderName }
+        if (index != -1) {
+            val current = reminders[index]
+            reminders[index] = current.copy(time = newTime)
+        }
+    }
 
-    // Get top 3 active reminders (sorted by most recently toggled on)
     fun getTopActiveReminders(): List<Pair<String, String>> {
         return reminders
-            .filter { toggleStates[it.title] == true && reminderTimes.containsKey(it.title) }
+            .filter { it.isEnabled && it.time.isNotEmpty() }
             .take(3)
-            .map { it.title to (reminderTimes[it.title] ?: "Not Set") }
+            .map { it.name to it.time }
     }
 }
+

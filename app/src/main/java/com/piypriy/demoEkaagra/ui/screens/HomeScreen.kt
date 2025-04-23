@@ -19,14 +19,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.piypriy.demoEkaagra.viewModel.ReminderViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 @Composable
 fun HomeScreen(
+    reminderViewModel: ReminderViewModel = viewModel(),
     onDashboardClick: () -> Unit,
     onAppControlClick: () -> Unit,
     onLifestyleClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
+    val topReminders = reminderViewModel.getTopActiveReminders()
 
     Column(
         modifier = Modifier
@@ -110,12 +115,29 @@ fun HomeScreen(
                 onClick = onAppControlClick
             )
 
-            OverviewCard(
+            OverviewCardWithContent(
                 title = "Lifestyle",
                 icon = Icons.Default.Event,
                 description = "Upcoming reminders",
                 onClick = onLifestyleClick
-            )
+            ) {
+                if (topReminders.isEmpty()) {
+                    Text(
+                        text = "No active reminders",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        topReminders.forEach { (name, time) ->
+                            Text(
+                                text = "• $name at $time",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -149,6 +171,41 @@ fun OverviewCard(
                 Text(text = title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Text(text = description, fontSize = 14.sp)
             }
+        }
+    }
+}
+
+@Composable
+fun OverviewCardWithContent(
+    title: String,
+    icon: ImageVector,
+    description: String,
+    onClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    modifier = Modifier.size(36.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    Text(text = title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text(text = description, fontSize = 14.sp)
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            content()
         }
     }
 }

@@ -16,6 +16,7 @@ import com.piypriy.demoEkaagra.ui.screens.LifestyleScreen
 import com.piypriy.demoEkaagra.ui.screens.SettingsScreen
 import com.piypriy.demoEkaagra.ui.theme.EkaagraTheme
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

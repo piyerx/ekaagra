@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.piypriy.demoEkaagra";
+option java_multiple_files = true;
+
+message ReminderItem {
+  string name = 1;
+  bool is_enabled = 2;
+  string time = 3;
+}
+
+message ReminderList {
+  repeated ReminderItem reminders = 1;
+}

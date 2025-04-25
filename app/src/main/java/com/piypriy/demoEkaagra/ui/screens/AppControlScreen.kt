@@ -2,6 +2,7 @@ package com.piypriy.demoEkaagra.ui.screens
 
 import android.app.TimePickerDialog
 import android.content.Context
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.piypriy.demoEkaagra.viewmodel.AppTimerViewModel
 import java.util.*
 
 data class InstalledApp(val name: String)
@@ -28,7 +30,7 @@ fun AppControlScreen() {
         InstalledApp("Telegram"),
         InstalledApp("Snapchat"),
     )
-
+    val timerViewModel: AppTimerViewModel = viewModel()
     val context = LocalContext.current
     var selectedApp by remember { mutableStateOf<InstalledApp?>(null) }
     var dialogVisible by remember { mutableStateOf(false) }
@@ -83,14 +85,19 @@ fun AppRow(app: InstalledApp, onClick: () -> Unit) {
 }
 
 @Composable
-fun SetTimerDialog(context: Context, appName: String, onDismiss: () -> Unit) {
+fun SetTimerDialog(
+context: Context,
+appPackageName: String,
+onDismiss: () -> Unit,
+timerViewModel: AppTimerViewModel
+) {
     var selectedOption by remember { mutableStateOf("App Timer") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                showTimePicker(context, appName, selectedOption)
+                showTimePicker(context, app.packageName, selectedOption, timerViewModel)
                 onDismiss()
             }) {
                 Text("Set")
@@ -122,7 +129,12 @@ fun SetTimerDialog(context: Context, appName: String, onDismiss: () -> Unit) {
     )
 }
 
-fun showTimePicker(context: Context, appName: String, option: String) {
+fun showTimePicker(
+    context: Context,
+    appName: String,
+    option: String,
+    timerViewModel: AppTimerViewModel
+) {
     val calendar = Calendar.getInstance()
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val minute = calendar.get(Calendar.MINUTE)
@@ -130,8 +142,21 @@ fun showTimePicker(context: Context, appName: String, option: String) {
     TimePickerDialog(
         context,
         { _, selectedHour, selectedMinute ->
-            // You can store this time or show a toast for now
-            println("$appName → $option set for: $selectedHour:$selectedMinute")
+            if (option == "App Timer") {
+                val duration = selectedHour * 60 + selectedMinute
+                timerViewModel.saveAppTimer(
+                    appName = appName,
+                    mode = "TIMER",
+                    duration = duration
+                )
+            } else if (option == "Time Range") {
+                timerViewModel.saveAppTimer(
+                    appName = appName,
+                    mode = "RANGE",
+                    startHour = selectedHour,
+                    startMinute = selectedMinute
+                )
+            }
         },
         hour,
         minute,

@@ -23,8 +23,7 @@ import java.util.*
 fun LifestyleScreen(
     viewModel: ReminderViewModel = viewModel()
 ) {
-    val reminders = viewModel.reminders
-
+    val reminders by viewModel.reminders.collectAsState()
     val context = LocalContext.current
 
     Column(

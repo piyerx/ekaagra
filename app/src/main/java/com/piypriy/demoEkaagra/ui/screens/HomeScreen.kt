@@ -31,7 +31,9 @@ fun HomeScreen(
     onLifestyleClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
-    val topReminders = reminderViewModel.getTopActiveReminders()
+    val topReminders by remember(reminderViewModel.reminders.collectAsState()) {
+        derivedStateOf { reminderViewModel.getTopActiveReminders() }
+    }
 
     Column(
         modifier = Modifier

@@ -1,22 +1,40 @@
 package com.piypriy.demoEkaagra.ui.screens
 
 import android.app.TimePickerDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.piypriy.demoEkaagra.viewmodel.AppTimerViewModel
-import java.util.*
+import java.util.Calendar
 
 data class InstalledApp(val name: String)
 
@@ -58,8 +76,9 @@ fun AppControlScreen() {
         if (dialogVisible && selectedApp != null) {
             SetTimerDialog(
                 context = context,
-                appName = selectedApp!!.name,
-                onDismiss = { dialogVisible = false }
+                appPackageName = selectedApp!!.name,
+                onDismiss = { dialogVisible = false },
+                timerViewModel = timerViewModel
             )
         }
     }
@@ -86,10 +105,10 @@ fun AppRow(app: InstalledApp, onClick: () -> Unit) {
 
 @Composable
 fun SetTimerDialog(
-context: Context,
-appPackageName: String,
-onDismiss: () -> Unit,
-timerViewModel: AppTimerViewModel
+    context: Context,
+    appPackageName: String,
+    onDismiss: () -> Unit,
+    timerViewModel: AppTimerViewModel
 ) {
     var selectedOption by remember { mutableStateOf("App Timer") }
 
@@ -97,7 +116,7 @@ timerViewModel: AppTimerViewModel
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                showTimePicker(context, app.packageName, selectedOption, timerViewModel)
+                showTimePicker(context, appPackageName, selectedOption, timerViewModel)
                 onDismiss()
             }) {
                 Text("Set")
@@ -108,7 +127,7 @@ timerViewModel: AppTimerViewModel
                 Text("Cancel")
             }
         },
-        title = { Text(text = "Set Timer for $appName") },
+        title = { Text(text = "Set Timer for $appPackageName") },
         text = {
             Column {
                 Text("Choose Option:")
@@ -131,35 +150,59 @@ timerViewModel: AppTimerViewModel
 
 fun showTimePicker(
     context: Context,
-    appName: String,
+    appPackageName: String,
     option: String,
     timerViewModel: AppTimerViewModel
 ) {
     val calendar = Calendar.getInstance()
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    val minute = calendar.get(Calendar.MINUTE)
 
-    TimePickerDialog(
-        context,
-        { _, selectedHour, selectedMinute ->
-            if (option == "App Timer") {
-                val duration = selectedHour * 60 + selectedMinute
+    if (option == "App Timer") {
+        // Simple App Timer: Pick Hours and Minutes
+        val durationOptions = (15..300 step 15).toList() // 15, 30, 45, ..., 300 mins (5 hours)
+        val items = durationOptions.map { "${it / 60}h ${it % 60}m" }
+
+        AlertDialog.Builder(context)
+            .setTitle("Select Duration")
+            .setItems(items.toTypedArray()) { _, which ->
+                val selectedDuration = durationOptions[which]
                 timerViewModel.saveAppTimer(
-                    appName = appName,
+                    appName = appPackageName,
                     mode = "TIMER",
-                    duration = duration
-                )
-            } else if (option == "Time Range") {
-                timerViewModel.saveAppTimer(
-                    appName = appName,
-                    mode = "RANGE",
-                    startHour = selectedHour,
-                    startMinute = selectedMinute
+                    duration = selectedDuration
                 )
             }
-        },
-        hour,
-        minute,
-        true
-    ).show()
+            .setNegativeButton("Cancel", null)
+            .show()
+
+
+    } else if (option == "Time Range") {
+        // First: Pick Start Time
+        TimePickerDialog(
+            context,
+            { _, startHour, startMinute ->
+
+                // Then: Pick End Time
+                TimePickerDialog(
+                    context,
+                    { _, endHour, endMinute ->
+                        timerViewModel.saveAppTimer(
+                            appName = appPackageName,
+                            mode = "RANGE",
+                            startHour = startHour,
+                            startMinute = startMinute,
+                            endHour = endHour,
+                            endMinute = endMinute
+                        )
+                    },
+                    startHour,
+                    startMinute,
+                    true
+                ).show()
+
+            },
+            calendar.get(Calendar.HOUR_OF_DAY),
+            calendar.get(Calendar.MINUTE),
+            true
+        ).show()
+    }
 }

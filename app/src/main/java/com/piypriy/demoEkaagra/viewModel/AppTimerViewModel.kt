@@ -1,4 +1,4 @@
-package com.piypriy.demoEkaagra.viewmodel
+package com.piypriy.demoEkaagra.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class AppTimerViewModel(application: Application) : AndroidViewModel(application) {
+
+    // ✨ Add this line to expose all timers
+    val appTimersFlow = getApplication<Application>().appTimerDataStore.data
 
     fun saveAppTimer(
         appName: String,
@@ -42,7 +45,6 @@ class AppTimerViewModel(application: Application) : AndroidViewModel(application
             val updatedList = AppTimerList.newBuilder()
                 .addAllTimers(newList)
                 .build()
-
 
             getApplication<Application>().appTimerDataStore.updateData {
                 updatedList

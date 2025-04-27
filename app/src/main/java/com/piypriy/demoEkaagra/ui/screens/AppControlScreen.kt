@@ -1,4 +1,4 @@
-// Updated AppControlScreen.kt
+// Updated AppControlScreen.kt (Now shows active timers)
 package com.piypriy.demoEkaagra.ui.screens
 
 import android.app.TimePickerDialog
@@ -16,10 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.piypriy.demoEkaagra.viewmodel.AppTimerViewModel
+import com.piypriy.demoEkaagra.viewModel.AppTimerViewModel
 import java.util.Calendar
 
-// Dummy app data
 
 @Composable
 fun AppControlScreen() {
@@ -37,6 +36,8 @@ fun AppControlScreen() {
     var selectedApp by remember { mutableStateOf<InstalledApp?>(null) }
     var showDurationDialog by remember { mutableStateOf(false) }
 
+    val timers by timerViewModel.appTimersFlow.collectAsState(initial = null)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,10 +51,18 @@ fun AppControlScreen() {
 
         LazyColumn {
             items(apps) { app ->
-                AppRow(app) {
+                val appTimer = timers?.timersList?.find { it.appName == app.name }
+                val timerText = appTimer?.let {
+                    if (it.mode == "TIMER") {
+                        "Timer: ${it.durationMinutes / 60}h ${it.durationMinutes % 60}m"
+                    } else {
+                        "Allowed: ${it.startHour}:${it.startMinute} - ${it.endHour}:${it.endMinute}"
+                    }
+                }
+                AppRow(app, onClick = {
                     selectedApp = app
                     dialogVisible = true
-                }
+                }, timerInfo = timerText)
             }
         }
 
@@ -84,21 +93,31 @@ fun AppControlScreen() {
 }
 
 @Composable
-fun AppRow(app: InstalledApp, onClick: () -> Unit) {
-    Row(
+fun AppRow(app: InstalledApp, onClick: () -> Unit, timerInfo: String?) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
             .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        horizontalAlignment = Alignment.Start
     ) {
-        Icon(
-            imageVector = Icons.Default.Android,
-            contentDescription = app.name,
-            modifier = Modifier.size(40.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(text = app.name, style = MaterialTheme.typography.bodyLarge)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Default.Android,
+                contentDescription = app.name,
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(text = app.name, style = MaterialTheme.typography.bodyLarge)
+        }
+        if (timerInfo != null) {
+            Text(
+                text = timerInfo,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 52.dp)
+            )
+        }
     }
 }
 

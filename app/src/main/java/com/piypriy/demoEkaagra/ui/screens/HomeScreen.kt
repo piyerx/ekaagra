@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.piypriy.demoEkaagra.viewModel.ReminderViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.piypriy.demoEkaagra.R
+import com.piypriy.demoEkaagra.viewModel.AppTimerViewModel
 
 
 @Composable
@@ -36,6 +37,13 @@ fun HomeScreen(
     val topReminders by remember(reminderViewModel.reminders.collectAsState()) {
         derivedStateOf { reminderViewModel.getTopActiveReminders() }
     }
+    val appTimerViewModel: AppTimerViewModel = viewModel()
+    val timers by appTimerViewModel.appTimersFlow.collectAsState(initial = null)
+    val topTimedApps = timers?.timersList
+        ?.take(3) // Take top 3
+        ?.map { it.appName } ?: emptyList()
+
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -128,12 +136,31 @@ fun HomeScreen(
                     onClick = onDashboardClick
                 )
 
-                OverviewCard(
+                OverviewCardWithContent(
                     title = "App Control",
                     icon = Icons.Default.Lock,
                     description = "Apps with active timers",
                     onClick = onAppControlClick
-                )
+                ) {
+                    if (topTimedApps.isEmpty()) {
+                        Text(
+                            text = "No apps under control",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.LightGray
+                        )
+                    } else {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            topTimedApps.forEach { appName ->
+                                Text(
+                                    text = "• $appName",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+
 
                 OverviewCardWithContent(
                     title = "Lifestyle",

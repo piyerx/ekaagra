@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.piypriy.demoEkaagra.viewModel.ReminderViewModel
 import androidx.compose.foundation.Image
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import com.piypriy.demoEkaagra.R
 import java.util.Calendar
@@ -43,6 +44,7 @@ fun LifestyleScreen(
             Text(
                 text = "Lifestyle Reminders",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                color = Color.White,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 

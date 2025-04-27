@@ -12,12 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.piypriy.demoEkaagra.viewModel.ReminderViewModel
-
-import java.util.*
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.piypriy.demoEkaagra.R
+import java.util.Calendar
 
 @Composable
 fun LifestyleScreen(
@@ -26,27 +27,36 @@ fun LifestyleScreen(
     val reminders by viewModel.reminders.collectAsState()
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Lifestyle Reminders",
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 16.dp)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.ekaagrabackground),
+            contentDescription = null,
+            modifier = Modifier.matchParentSize(),
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
         )
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(reminders) { reminder ->
-                ReminderCard(
-                    context = context,
-                    name = reminder.name,
-                    isEnabled = reminder.isEnabled,
-                    time = reminder.time,
-                    onToggle = { viewModel.toggleReminder(reminder.name) },
-                    onTimeChange = { newTime -> viewModel.setReminderTime(reminder.name, newTime) }
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Lifestyle Reminders",
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(reminders) { reminder ->
+                    ReminderCard(
+                        context = context,
+                        name = reminder.name,
+                        isEnabled = reminder.isEnabled,
+                        time = reminder.time,
+                        onToggle = { viewModel.toggleReminder(reminder.name) },
+                        onTimeChange = { newTime -> viewModel.setReminderTime(reminder.name, newTime) }
+                    )
+                }
             }
         }
     }
@@ -123,3 +133,4 @@ fun showTimePickerDialog(
         true
     ).show()
 }
+

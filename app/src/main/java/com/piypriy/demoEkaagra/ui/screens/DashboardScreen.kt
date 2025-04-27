@@ -13,8 +13,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.piypriy.demoEkaagra.R
 
 data class AppUsageItem(val name: String, val usageTime: String, val icon: ImageVector)
 
@@ -33,56 +35,64 @@ fun DashboardScreen() {
         AppUsageItem("Facebook", "20m", Icons.Default.Android),
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Title
-        Text(
-            text = "Dashboard",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.ekaagrabackground),
+            contentDescription = null,
+            modifier = Modifier.matchParentSize(),
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
         )
-
-        // Total Screen Time
-        Text(
-            text = "Total Screen Time Today",
-            style = MaterialTheme.typography.labelLarge
-        )
-        Text(
-            text = "5h 25m", // Placeholder
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Day navigation row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            IconButton(onClick = { /* Not functional yet */ }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Previous Day")
+            // Title
+            Text(
+                text = "Dashboard",
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Total Screen Time
+            Text(
+                text = "Total Screen Time Today",
+                style = MaterialTheme.typography.labelLarge
+            )
+            Text(
+                text = "5h 25m", // Placeholder
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Day navigation row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { /* Not functional yet */ }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Previous Day")
+                }
+                Text("Today", fontSize = 18.sp)
+                IconButton(onClick = { /* Not functional yet */ }) {
+                    Icon(Icons.Default.ArrowForward, contentDescription = "Next Day")
+                }
             }
-            Text("Today", fontSize = 18.sp)
-            IconButton(onClick = { /* Not functional yet */ }) {
-                Icon(Icons.Default.ArrowForward, contentDescription = "Next Day")
-            }
-        }
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-        // Top 10 Apps Used
-        Text(
-            text = "Top 10 Most Used Apps",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+            // Top 10 Apps Used
+            Text(
+                text = "Top 10 Most Used Apps",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
 
-        LazyColumn {
-            items(dummyUsageData) { app ->
-                AppUsageItemView(app)
+            LazyColumn {
+                items(dummyUsageData) { app ->
+                    AppUsageItemView(app)
+                }
             }
         }
     }

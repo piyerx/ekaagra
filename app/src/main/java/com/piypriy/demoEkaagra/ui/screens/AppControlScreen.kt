@@ -3,6 +3,7 @@ package com.piypriy.demoEkaagra.ui.screens
 
 import android.app.TimePickerDialog
 import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,8 +15,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.piypriy.demoEkaagra.R
 import com.piypriy.demoEkaagra.viewModel.AppTimerViewModel
 import java.util.Calendar
 
@@ -38,56 +41,64 @@ fun AppControlScreen() {
 
     val timers by timerViewModel.appTimersFlow.collectAsState(initial = null)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "App Control",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.ekaagrabackground),
+            contentDescription = null,
+            modifier = Modifier.matchParentSize(),
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
         )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "App Control",
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        LazyColumn {
-            items(apps) { app ->
-                val appTimer = timers?.timersList?.find { it.appName == app.name }
-                val timerText = appTimer?.let {
-                    if (it.mode == "TIMER") {
-                        "Timer: ${it.durationMinutes / 60}h ${it.durationMinutes % 60}m"
-                    } else {
-                        "Allowed: ${it.startHour}:${it.startMinute} - ${it.endHour}:${it.endMinute}"
+            LazyColumn {
+                items(apps) { app ->
+                    val appTimer = timers?.timersList?.find { it.appName == app.name }
+                    val timerText = appTimer?.let {
+                        if (it.mode == "TIMER") {
+                            "Timer: ${it.durationMinutes / 60}h ${it.durationMinutes % 60}m"
+                        } else {
+                            "Allowed: ${it.startHour}:${it.startMinute} - ${it.endHour}:${it.endMinute}"
+                        }
                     }
+                    AppRow(app, onClick = {
+                        selectedApp = app
+                        dialogVisible = true
+                    }, timerInfo = timerText)
                 }
-                AppRow(app, onClick = {
-                    selectedApp = app
-                    dialogVisible = true
-                }, timerInfo = timerText)
             }
-        }
 
-        if (dialogVisible && selectedApp != null) {
-            SetTimerDialog(
-                context = context,
-                appPackageName = selectedApp!!.name,
-                onDismiss = { dialogVisible = false },
-                timerViewModel = timerViewModel,
-                onShowDurationPicker = { showDurationDialog = true }
-            )
-        }
+            if (dialogVisible && selectedApp != null) {
+                SetTimerDialog(
+                    context = context,
+                    appPackageName = selectedApp!!.name,
+                    onDismiss = { dialogVisible = false },
+                    timerViewModel = timerViewModel,
+                    onShowDurationPicker = { showDurationDialog = true }
+                )
+            }
 
-        if (showDurationDialog && selectedApp != null) {
-            DurationPickerDialog(
-                onDismiss = { showDurationDialog = false },
-                onDurationSelected = { minutes ->
-                    timerViewModel.saveAppTimer(
-                        appName = selectedApp!!.name,
-                        mode = "TIMER",
-                        duration = minutes
-                    )
-                    showDurationDialog = false
-                }
-            )
+            if (showDurationDialog && selectedApp != null) {
+                DurationPickerDialog(
+                    onDismiss = { showDurationDialog = false },
+                    onDurationSelected = { minutes ->
+                        timerViewModel.saveAppTimer(
+                            appName = selectedApp!!.name,
+                            mode = "TIMER",
+                            duration = minutes
+                        )
+                        showDurationDialog = false
+                    }
+                )
+            }
         }
     }
 }

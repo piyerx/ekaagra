@@ -44,9 +44,11 @@ fun HomeScreen(
             modifier = Modifier.matchParentSize(),
             contentScale = androidx.compose.ui.layout.ContentScale.Crop
         )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(16.dp)
         ) {
             // Top Row: Title + Profile
             Row(
@@ -56,21 +58,23 @@ fun HomeScreen(
             ) {
                 Text(
                     text = "Ekaagra",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White
                 )
 
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Profile",
+                    tint = Color.White,
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(48.dp)
                         .clip(CircleShape)
                         .clickable { onSettingsClick() }
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Daily Screen Time (for now, mock value)
             Row(
@@ -78,19 +82,22 @@ fun HomeScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Timer,
-                    contentDescription = "Screen Time"
+                    contentDescription = "Screen Time",
+                    tint = Color.White
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Today’s screen time: 2h 36m",
-                    fontSize = 16.sp
+                    fontSize = 18.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Circular Progress – Day % Passed
-            val progress = remember { 0.5f } // 50% for now
+            val progress = remember { 0.5f }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,17 +106,21 @@ fun HomeScreen(
             ) {
                 CircularProgressIndicator(
                     progress = { progress },
-                    strokeWidth = 6.dp,
-                    color = MaterialTheme.colorScheme.primary
+                    strokeWidth = 8.dp,
+                    color = Color.Cyan
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("${(progress * 100).toInt()}% of the day passed")
+                Text(
+                    "${(progress * 100).toInt()}% of the day passed",
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Overview Sections
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 OverviewCard(
                     title = "Dashboard",
                     icon = Icons.Default.BarChart,
@@ -134,14 +145,15 @@ fun HomeScreen(
                         Text(
                             text = "No active reminders",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
+                            color = Color.LightGray
                         )
                     } else {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             topReminders.forEach { (name, time) ->
                                 Text(
                                     text = "• $name at $time",
-                                    style = MaterialTheme.typography.bodySmall
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White
                                 )
                             }
                         }
@@ -160,26 +172,28 @@ fun OverviewCard(
     onClick: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .height(120.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF004AAD)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(20.dp)
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                modifier = Modifier.size(36.dp),
-                tint = MaterialTheme.colorScheme.primary
+                modifier = Modifier.size(40.dp),
+                tint = Color.White
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(20.dp))
             Column {
-                Text(text = title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text(text = description, fontSize = 14.sp)
+                Text(text = title, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color.White)
+                Text(text = description, fontSize = 14.sp, color = Color.White.copy(alpha = 0.8f))
             }
         }
     }
@@ -194,27 +208,29 @@ fun OverviewCardWithContent(
     content: @Composable () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .height(140.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF004AAD)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    modifier = Modifier.size(36.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    modifier = Modifier.size(40.dp),
+                    tint = Color.White
                 )
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(20.dp))
                 Column {
-                    Text(text = title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Text(text = description, fontSize = 14.sp)
+                    Text(text = title, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color.White)
+                    Text(text = description, fontSize = 14.sp, color = Color.White.copy(alpha = 0.8f))
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             content()
         }
     }

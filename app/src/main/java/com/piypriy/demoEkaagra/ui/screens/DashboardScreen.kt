@@ -24,16 +24,13 @@ data class AppUsageItem(val name: String, val usageTime: String, val icon: Image
 @Composable
 fun DashboardScreen() {
     val dummyUsageData = listOf(
-        AppUsageItem("Instagram", "2h 15m", Icons.Default.Android),
-        AppUsageItem("YouTube", "1h 45m", Icons.Default.Android),
-        AppUsageItem("Chrome", "1h 30m", Icons.Default.Android),
-        AppUsageItem("WhatsApp", "1h 10m", Icons.Default.Android),
-        AppUsageItem("Spotify", "55m", Icons.Default.Android),
-        AppUsageItem("Reddit", "50m", Icons.Default.Android),
-        AppUsageItem("Twitter", "45m", Icons.Default.Android),
-        AppUsageItem("Telegram", "30m", Icons.Default.Android),
-        AppUsageItem("Snapchat", "25m", Icons.Default.Android),
-        AppUsageItem("Facebook", "20m", Icons.Default.Android),
+        AppUsageItem("Instagram", "45m", Icons.Default.Android),
+        AppUsageItem("YouTube", "25m", Icons.Default.Android),
+        AppUsageItem("Chrome", "15m", Icons.Default.Android),
+        AppUsageItem("WhatsApp", "15m", Icons.Default.Android),
+        AppUsageItem("Spotify", "-", Icons.Default.Android),
+        AppUsageItem("Reddit", "5m", Icons.Default.Android),
+        AppUsageItem("Telegram", "3m", Icons.Default.Android),
     )
 
     Box(modifier = Modifier.fillMaxSize()) {

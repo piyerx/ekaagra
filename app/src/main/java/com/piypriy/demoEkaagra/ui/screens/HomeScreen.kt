@@ -95,7 +95,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Today’s screen time: 2h 36m",
+                    text = "Today’s screen time: 1h 12m",
                     fontSize = 18.sp,
                     color = Color.White,
                     fontWeight = FontWeight.SemiBold

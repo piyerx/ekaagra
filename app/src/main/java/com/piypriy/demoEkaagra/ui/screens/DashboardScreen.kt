@@ -115,8 +115,8 @@ fun AppUsageItemView(app: AppUsageItem) {
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
-            Text(text = app.name, style = MaterialTheme.typography.bodyLarge)
-            Text(text = app.usageTime, style = MaterialTheme.typography.labelSmall)
+            Text(text = app.name, style = MaterialTheme.typography.bodyLarge, color = Color.White)
+            Text(text = app.usageTime, style = MaterialTheme.typography.labelSmall, color = Color.White)
         }
     }
 }
